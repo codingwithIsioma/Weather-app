@@ -5,11 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/6a9f6daa92.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div class="page">
-      <header></header>
-      <main></main>
+      <header>
+        <h2 class="logo"><i class="fa-solid fa-bolt"></i> Weather App</h2>
+      </header>
+      <main>
+        <section class="search-section">
+          <form id="search-city">
+            <input type="text" name="city" id="city" placeholder="Shanghai" />
+            <button type="submit" class="search-btn">Search</button>
+          </form>
+        </section>
+        <section class="hero-section">
+          <div class="display-container">
+            <div class="display-details">
+              <div class="weather-icon" id="weather-icon">☀️</div>
+              <p class="location">Lagos, Nigeria</p>
+              <h1 class="weather-temperature">32°C</h1>
+              <p class="weather-description">Sunny Feels like 36°C</p>
+            </div>
+          </div>
+          <div class="stats-container">
+            <div class="stats-item">
+              <p class="stat-tag">Humidity</p>
+              <p id="humidity" class="stat-value">78%</p>
+            </div>
+            <div class="stats-item">
+              <p class="stat-tag">Wind</p>
+              <p id="wind" class="stat-value">14 km/h</p>
+            </div>
+            <div class="stats-item">
+              <p class="stat-tag">UV Index</p>
+              <p id="uv-index" class="stat-value">High</p>
+            </div>
+          </div>
+        </section>
+        <section class="forecast-section">
+          <h3 class="forecast-tag">5-DAY FORECAST</h3>
+          <div class="forecast-container">
+            <div class="forecast-item">
+              <p class="forecast-date">Today</p>
+              <div class="forecast-icon">☀</div>
+              <div class="forecast-temperature">
+                <p class="highest">34°</p>
+                <p class="lowest">27°</p>
+              </div>
+            </div>
+            <div class="forecast-item">
+              <p class="forecast-date">Tuesday</p>
+              <div class="forecast-icon">☀</div>
+              <div class="forecast-temperature">
+                <p class="highest">31°</p>
+                <p class="lowest">25°</p>
+              </div>
+            </div>
+            <div class="forecast-item">
+              <p class="forecast-date">Wednesday</p>
+              <div class="forecast-icon">☀</div>
+              <div class="forecast-temperature">
+                <p class="highest">28°</p>
+                <p class="lowest">24°</p>
+              </div>
+            </div>
+            <div class="forecast-item">
+              <p class="forecast-date">Thursday</p>
+              <div class="forecast-icon">☀</div>
+              <div class="forecast-temperature">
+                <p class="highest">27°</p>
+                <p class="lowest">23°</p>
+              </div>
+            </div>
+            <div class="forecast-item">
+              <p class="forecast-date">Friday</p>
+              <div class="forecast-icon">☀</div>
+              <div class="forecast-temperature">
+                <p class="highest">33°</p>
+                <p class="lowest">26°</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
     <script src="script.js"></script>
   </body>

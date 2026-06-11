@@ -5,17 +5,229 @@
 }
 
 :root {
-  --main-font: Arial, sans-serif;
+  --main-font: "DM Sans", sans-serif;
   --dark-navy: #1a3c5e;
   --teal: #2e86ab;
   --white: #fff;
+  --border-color: #bbbbbb;
+  --muted-text: #646464;
+  --very-muted-text: #999999;
+  --border-teal: #2e86ab2b;
 }
 
 body {
   width: 100%;
   height: 100vh;
-  background-color: var(--white);
   color: var(--dark-navy);
   font-family: var(--main-font);
   font-size: 16px;
+}
+
+.page {
+  width: 100vw;
+  background-color: var(--white);
+}
+
+/* ========= SEARCH SECTION ========= */
+
+header {
+  background-color: var(--dark-navy);
+  color: var(--white);
+  padding: 1rem 0.5rem;
+}
+
+.logo {
+  font-size: 1rem;
+}
+
+.search-section {
+  padding: 0 0.5rem;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  gap: 0.2rem;
+  margin: 0.35rem 0;
+}
+
+input {
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  color: var(--muted-text);
+  font-size: 0.9rem;
+  font-family: var(--main-font);
+}
+
+input::placeholder {
+  font-family: var(--main-font);
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid var(--muted-text);
+}
+
+.search-btn {
+  background-color: var(--teal);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--main-font);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+/* ========================================== */
+
+/* ========= HERO SECTION ========= */
+.hero-section {
+  padding: 0 0.5rem;
+}
+
+/* Display Container */
+.display-container {
+  width: 100%;
+  height: fit-content;
+  background-color: var(--teal);
+  color: var(--white);
+  padding: 1rem 0 2rem;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+}
+
+.display-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.weather-icon {
+  font-size: 2rem;
+  margin-bottom: 0.35rem;
+}
+
+.location {
+  text-transform: capitalize;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  letter-spacing: 1px;
+}
+
+.weather-temperature {
+  font-size: 3rem;
+  margin-bottom: 0.35rem;
+  letter-spacing: 1px;
+}
+
+.weather-description {
+  color: #ffffff88;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* Stats Container */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border-teal);
+  border-radius: 10px;
+  padding: 0.5rem 0;
+  margin-bottom: 0.85rem;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid var(--border-teal);
+}
+
+.stats-item:last-child {
+  border-right: none;
+}
+
+.stat-tag {
+  color: var(--very-muted-text);
+  font-size: 0.78rem;
+  margin-bottom: 0.4rem;
+}
+
+.stat-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+/* ========================================== */
+
+/* ========= FORECAST SECTION ========= */
+.forecast-section {
+  padding: 0 0.5rem;
+}
+
+.forecast-tag {
+  color: var(--very-muted-text);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.forecast-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0.5rem 0;
+  border: 1px solid var(--border-teal);
+  border-radius: 10px;
+  padding: 0.6rem;
+  background-color: #2e86ab0c;
+}
+
+.forecast-date {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.forecast-icon {
+  text-align: center;
+  color: var(--muted-text);
+}
+
+.forecast-temperature {
+  text-align: center;
+}
+
+.highest {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.lowest {
+  font-size: 0.9rem;
+  color: var(--very-muted-text);
+}
+/* ========================================== */
+
+@media screen and (min-width: 480px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .page {
+    max-width: 480px;
+  }
+  .search-section {
+    padding: 0;
+  }
+  .hero-section {
+    padding: 0;
+  }
+  .forecast-section {
+    padding: 0;
+  }
 }
