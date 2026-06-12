@@ -5,26 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/6a9f6daa92.js"
-      crossorigin="anonymous"
-    ></script>
   </head>
   <body>
     <div class="page">
       <header>
-        <h2 class="logo"><i class="fa-solid fa-bolt"></i> Weather App</h2>
+        <h2 class="logo">⚡️ Weather App</h2>
       </header>
       <main>
         <section class="search-section">
           <form id="search-city">
-            <input type="text" name="city" id="city" placeholder="Shanghai" />
+            <input type="text" name="city" id="city" placeholder="Search for a city" />
             <button type="submit" class="search-btn">Search</button>
           </form>
           <div class="error-message">
@@ -36,15 +26,18 @@
         </section>
         <section class="hero-section">
           <div class="display-container">
-            <div class="display-details">
+            <!-- <div class="display-details">
               <div class="weather-icon" id="weather-icon">☀️</div>
               <p class="location">Lagos, Nigeria</p>
               <h1 class="weather-temperature">32°C</h1>
-              <p class="weather-description">Sunny Feels like 36°C</p>
-            </div>
+              <p class="weather-description">
+                <span id="description">Sunny</span> · Feels like
+                <span id="feels-like">36°C</span>
+              </p>
+            </div> -->
           </div>
           <div class="stats-container">
-            <div class="stats-item">
+            <!-- <div class="stats-item">
               <p class="stat-tag">Humidity</p>
               <p id="humidity" class="stat-value">78%</p>
             </div>
@@ -55,13 +48,13 @@
             <div class="stats-item">
               <p class="stat-tag">UV Index</p>
               <p id="uv-index" class="stat-value">High</p>
-            </div>
+            </div> -->
           </div>
         </section>
         <section class="forecast-section">
           <h3 class="forecast-tag">5-DAY FORECAST</h3>
           <div class="forecast-container">
-            <div class="forecast-item">
+            <!-- <div class="forecast-item">
               <p class="forecast-date">Today</p>
               <div class="forecast-icon">☀</div>
               <div class="forecast-temperature">
@@ -100,55 +93,9 @@
                 <p class="highest">33°</p>
                 <p class="lowest">26°</p>
               </div>
-            </div>
+            </div> -->
           </div>
         </section>
-        <!-- <section class="loading-skeleton">
-          <div class="skeleton-details">
-            <p class="loading">Loading...</p>
-            <p class="loading-description">Fetching weather data for city</p>
-          </div>
-          <div class="skeleton-item">
-            <div class="skeleton-date"></div>
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-temperature">
-              <div class="skeleton-highest"></div>
-              <div class="skeleton-lowest"></div>
-            </div>
-          </div>
-          <div class="skeleton-item">
-            <div class="skeleton-date"></div>
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-temperature">
-              <div class="skeleton-highest"></div>
-              <div class="skeleton-lowest"></div>
-            </div>
-          </div>
-          <div class="skeleton-item">
-            <div class="skeleton-date"></div>
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-temperature">
-              <div class="skeleton-highest"></div>
-              <div class="skeleton-lowest"></div>
-            </div>
-          </div>
-          <div class="skeleton-item">
-            <div class="skeleton-date"></div>
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-temperature">
-              <div class="skeleton-highest"></div>
-              <div class="skeleton-lowest"></div>
-            </div>
-          </div>
-          <div class="skeleton-item">
-            <div class="skeleton-date"></div>
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-temperature">
-              <div class="skeleton-highest"></div>
-              <div class="skeleton-lowest"></div>
-            </div>
-          </div>
-        </section> -->
       </main>
     </div>
     <script src="script.js"></script>

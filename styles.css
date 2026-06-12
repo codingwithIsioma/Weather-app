@@ -218,6 +218,7 @@ input:focus {
 }
 
 .forecast-icon {
+  font-size: 1.8rem;
   text-align: center;
   color: var(--muted-text);
 }
@@ -282,6 +283,38 @@ input:focus {
 .loading-description {
   font-size: 0.85rem;
   color: var(--very-muted-text);
+}
+
+.loading-description span {
+  text-transform: capitalize;
+}
+
+.skeleton-stats-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid var(--border-teal);
+}
+
+.skeleton-stats-item:last-child {
+  border-right: none;
+}
+
+.skeleton-stat-tag {
+  width: 50px;
+  height: 10px;
+  background-color: var(--skeleton);
+  border-radius: 5px;
+  margin: 0.4rem 0;
+}
+
+.skeleton-stat-value {
+  width: 30px;
+  height: 10px;
+  background-color: var(--skeleton);
+  border-radius: 5px;
+  margin-bottom: 0.4rem;
 }
 
 .skeleton-item {
