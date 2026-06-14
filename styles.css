@@ -1,3 +1,12 @@
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -126,7 +135,7 @@ input:focus {
 }
 
 .weather-icon {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 0.35rem;
 }
 
@@ -190,10 +199,28 @@ input:focus {
   padding: 0 0.5rem;
 }
 
+.forecast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
 .forecast-tag {
   color: var(--very-muted-text);
   font-size: 0.8rem;
   letter-spacing: 0.5px;
+}
+
+.toggle-temperature {
+  background: var(--teal);
+  color: var(--white);
+  font-family: var(--main-font);
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
 }
 
 .forecast-item {
@@ -362,4 +389,92 @@ input:focus {
   height: 10px;
   background-color: var(--skeleton);
   border-radius: 5px;
+}
+
+/* ======================== */
+
+/* ANIMATION FOR WEATHER ICONS */
+@keyframes spinning {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes drops {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+}
+
+@keyframes slightShake {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.sun {
+  animation: spinning 7s linear infinite;
+}
+
+.cloudy {
+  animation: slightShake 3s ease-in-out infinite;
+}
+
+.rainy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.rain-cloud {
+  font-size: 3rem;
+  z-index: 10;
+}
+
+.rain-drops {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  margin-top: -30px;
+}
+
+.rain-drop {
+  font-size: 0.7rem;
+  animation: drops 0.75s linear infinite;
+}
+
+.rain-drop:nth-child(1) {
+  animation-delay: 0s;
+}
+.rain-drop:nth-child(2) {
+  animation-delay: 0.25s;
+  font-size: 0.6rem;
+}
+.rain-drop:nth-child(3) {
+  animation-delay: 0.5s;
+}
+.rain-drop:nth-child(4) {
+  animation-delay: 0.75s;
+  font-size: 0.55rem;
 }

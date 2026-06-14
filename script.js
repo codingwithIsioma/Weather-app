@@ -14,12 +14,17 @@ const humidity = document.getElementById("humidity");
 const wind = document.getElementById("wind");
 const uvIndex = document.getElementById("uv-index");
 const forecastContainer = document.querySelector(".forecast-container");
-const forecastTag = document.querySelector(".forecast-tag");
+const forecastHeader = document.querySelector(".forecast-header");
+const toggleTemperature = document.querySelector(".toggle-temperature");
+const fullPage = document.querySelector(".page");
+
+let currentUnit;
+let currentWeatherResponse = null;
 
 // Task: Update this to geolocation function. If user declines geolocation request, show this.
 weatherContainer.style.display = "none";
 statsContainer.style.display = "none";
-forecastTag.style.display = "none";
+forecastHeader.style.display = "none";
 
 // Get coordinates for a city name
 async function getCoordinates(city) {
@@ -119,7 +124,7 @@ const displayLoadingSkeleton = (cityName) => {
     `;
   weatherContainer.style.display = "block";
   statsContainer.style.display = "grid";
-  forecastTag.style.display = "block";
+  forecastHeader.style.display = "flex";
   weatherContainer.innerHTML = displaySkeleton;
   statsContainer.innerHTML = statsSkeleton;
   forecastContainer.innerHTML = forecastSkeleton;
@@ -136,10 +141,70 @@ const displayCurrentWeather = (data, cityName, country) => {
   const currentUVIndex = data.daily.uv_index_max[0];
   const uvDescription = getUVIndex(Math.round(currentUVIndex));
 
+  // Add icon animation class based on icon
+  const iconClass =
+    weatherDescriptionAndCode.icon === "☀️"
+      ? "sun"
+      : weatherDescriptionAndCode.icon === "⛅️"
+        ? "cloudy"
+        : "";
+  // If it's raining in icon, add the raining animation
+  const isRainingOrSnowing =
+    weatherDescriptionAndCode.icon === "🌧️"
+      ? `
+    <div class="rainy">
+        <div class="rain-cloud">☁️</div>
+            <div class="rain-drops">
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+            </div>
+    </div>
+    `
+      : weatherDescriptionAndCode.icon === "🌦️"
+        ? `
+        <div class="rainy">
+            <div class="rain-cloud">⛅️</div>
+            <div class="rain-drops">
+                <div class="rain-drop">💧</div>
+                <div class="rain-drop">💧</div>
+                <div class="rain-drop">💧</div>
+            </div>
+        </div>
+      `
+        : weatherDescriptionAndCode.icon === "⛈️"
+          ? `
+        <div class="rainy">
+            <div class="rain-cloud">🌩️</div>
+            <div class="rain-drops">
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+            </div>
+        </div>
+        `
+          : weatherDescriptionAndCode.icon === "❄️"
+            ? `
+            <div class="rainy">
+                <div class="rain-cloud">☁️</div>
+                <div class="rain-drops">
+                <div class="rain-drop">❄️</div>
+                <div class="rain-drop">❄️</div>
+                <div class="rain-drop">❄️</div>
+                <div class="rain-drop">❄️</div>
+                </div>
+            </div>
+          `
+            : weatherDescriptionAndCode.icon;
+
   // update DOM
   let displayDetails = `
         <div class="display-details">
-            <div class="weather-icon" id="weather-icon">${weatherDescriptionAndCode.icon}</div>
+            <div class="weather-icon ${iconClass}" id="weather-icon">
+            ${isRainingOrSnowing}
+            </div>
             <p class="location">${cityName}, ${country}</p>
             <h1 class="weather-temperature">${Math.round(currentTemperature)}°C</h1>
             <p class="weather-description">
@@ -230,10 +295,11 @@ const displayForecast = (daily) => {
         </div>
     `;
   }
-  forecastTag.style.display = "block";
+  forecastHeader.style.display = "flex";
   forecastContainer.innerHTML = displayForecast;
+  toggleTemperature.textContent = "Show in °F";
 };
-// Converts dates to day
+// Converts dates of next 5 days to day
 const convertDateToDay = (dates) => {
   const newDates = dates.map((date) => {
     const convertDate = new Date(date);
@@ -251,6 +317,7 @@ const convertDateToDay = (dates) => {
   });
   return newDates;
 };
+// Returns the weather icon for the next 5 days
 const convertWeatherCode = (codes) => {
   const weatherCodes = codes.map((code) => {
     return getWeatherDescription(code);
@@ -258,8 +325,60 @@ const convertWeatherCode = (codes) => {
   return weatherCodes;
 };
 
+// Handle toggle for fahrenheit or celsius
+const handleToggle = (data) => {
+  const weatherTemperature = document.querySelector(".weather-temperature");
+  const feelsLike = document.querySelector("#feels-like");
+  const highestTemp = document.querySelectorAll(".highest");
+  const lowestTemp = document.querySelectorAll(".lowest");
+  const currentTemperature = data.current.temperature_2m;
+  const currentApparentTemperature = data.current.apparent_temperature;
+  const forecastHighestTemp = data.daily.temperature_2m_max.slice(0, 5);
+  const forecastLowestTemp = data.daily.temperature_2m_min.slice(0, 5);
+  const forecastHighestTempInFahrenheit = forecastHighestTemp.map((temp) => {
+    return convertToFahrenheit(temp);
+  });
+  const forecastLowestTempInFahrenheit = forecastLowestTemp.map((temp) => {
+    return convertToFahrenheit(temp);
+  });
+
+  if (currentUnit === "fahrenheit") {
+    toggleTemperature.textContent = "Show in °F";
+    weatherTemperature.textContent = `${Math.round(currentTemperature)}°C`;
+    feelsLike.textContent = `${Math.round(currentApparentTemperature)}°C`;
+    for (let i = 0; i < 5; i++) {
+      highestTemp[i].textContent = `${Math.round(forecastHighestTemp[i])}°`;
+      lowestTemp[i].textContent = `${Math.round(forecastLowestTemp[i])}°`;
+    }
+    currentUnit = "celsius";
+    return;
+  } else if (currentUnit === "celsius") {
+    const currentTemperatureInFahrenheit =
+      convertToFahrenheit(currentTemperature);
+    const currentApparentTemperatureInFahrenheit = convertToFahrenheit(
+      currentApparentTemperature,
+    );
+    toggleTemperature.textContent = "Show in °C";
+    weatherTemperature.textContent = `${Math.round(currentTemperatureInFahrenheit)}°F`;
+    feelsLike.textContent = `${Math.round(currentApparentTemperatureInFahrenheit)}°F`;
+    for (let i = 0; i < 5; i++) {
+      highestTemp[i].textContent =
+        `${Math.round(forecastHighestTempInFahrenheit[i])}°`;
+      lowestTemp[i].textContent =
+        `${Math.round(forecastLowestTempInFahrenheit[i])}°`;
+    }
+    currentUnit = "fahrenheit";
+    return;
+  }
+};
+const convertToFahrenheit = (celsius) => {
+  const result = celsius * 1.8 + 32;
+  return result;
+};
+
 // Main function triggered by the Search button
 async function handleSearch(city) {
+  currentUnit = "";
   const coordinateResponse = await getCoordinates(city);
   if (coordinateResponse.results) {
     const cityName = coordinateResponse.results[0].name;
@@ -272,11 +391,20 @@ async function handleSearch(city) {
       displayCurrentWeather(weatherResponse, cityName, countryName);
       displayForecast(weatherResponse.daily);
       cityInput.value = "";
+      currentUnit = "celsius";
+      currentWeatherResponse = weatherResponse;
     }
   } else {
     errorMessage.style.display = "block";
   }
 }
+
+// Add event listener to toggle button
+toggleTemperature.addEventListener("click", () => {
+  if (currentWeatherResponse) {
+    handleToggle(currentWeatherResponse);
+  }
+});
 
 // Removes the error message (if any) when a user starts to type
 cityInput.addEventListener("input", () => {
