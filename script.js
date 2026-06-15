@@ -14,12 +14,119 @@ const humidity = document.getElementById("humidity");
 const wind = document.getElementById("wind");
 const uvIndex = document.getElementById("uv-index");
 const forecastContainer = document.querySelector(".forecast-container");
-const forecastTag = document.querySelector(".forecast-tag");
+const forecastHeader = document.querySelector(".forecast-header");
+const toggleTemperature = document.querySelector(".toggle-temperature");
+const fullPage = document.querySelector(".page");
+const currentLocation = document.querySelector(".current-location");
+const orDivider = document.querySelector(".or");
+const recentSearchHeader = document.querySelector(".recent-search-header");
+const recentSearchContainer = document.querySelector(
+  ".recent-search-container",
+);
 
-// Task: Update this to geolocation function. If user declines geolocation request, show this.
-weatherContainer.style.display = "none";
-statsContainer.style.display = "none";
-forecastTag.style.display = "none";
+let currentUnit;
+let currentWeatherResponse = null;
+let recentlySearchedArr =
+  JSON.parse(localStorage.getItem("recently_searched")) || [];
+
+// ========================== HANDLES THE INITIAL LOAD OF SCREEN AND RELOADING PAGE ==========================
+
+// if there are recently searched cities give user option to either pick from a list of them or view weather information of
+// their current location. if there is no recently searched cities, automatically show weather information on user's current
+// location, if they give permissions, else nothing.
+
+if (recentlySearchedArr.length > 0) {
+  weatherContainer.style.display = "none";
+  statsContainer.style.display = "none";
+  forecastHeader.style.display = "none";
+  const duplicateRecentlySearched = [...recentlySearchedArr];
+  const uniqueSearch = new Set();
+  duplicateRecentlySearched.forEach((search) => {
+    uniqueSearch.add(search.city);
+  });
+  const getUniqueArr = [...uniqueSearch];
+  const finalArr = getUniqueArr.map((city) => {
+    const filteredArr = duplicateRecentlySearched.filter(
+      (search) => search.city === city,
+    );
+    return filteredArr;
+  });
+  let recentHTML = "";
+  finalArr.slice(0, 5).forEach((search) => {
+    recentHTML += `
+            <div class="recent-search-item" id="${search[0].city}">
+                <div class="recent-search-location">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <div class="location">
+                    <p id="recent-city">${search[0].city}</p>
+                    <p id="recent-country">${search[0].country}</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-angle-right"></i>
+            </div>
+    `;
+  });
+  recentSearchContainer.innerHTML = recentHTML;
+  recentSearchContainer.addEventListener("click", (e) => {
+    const cityName = e.target.attributes.id.value;
+    handleSearch(cityName);
+  });
+  currentLocation.addEventListener("click", () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(usePosition);
+    } else {
+      return;
+    }
+  });
+} else {
+  // Task: Update this to geolocation function. If user declines geolocation request, show this.
+  if (navigator.geolocation) {
+    weatherContainer.style.display = "none";
+    statsContainer.style.display = "none";
+    forecastHeader.style.display = "none";
+    currentLocation.style.display = "none";
+    orDivider.style.display = "none";
+    recentSearchHeader.style.display = "none";
+    navigator.geolocation.getCurrentPosition(usePosition);
+  } else {
+    weatherContainer.style.display = "none";
+    statsContainer.style.display = "none";
+    forecastHeader.style.display = "none";
+    currentLocation.style.display = "none";
+    orDivider.style.display = "none";
+    recentSearchHeader.style.display = "none";
+  }
+}
+
+async function usePosition(position) {
+  const data = await getCityFromCoordinates(
+    position.coords.latitude,
+    position.coords.longitude,
+  );
+  if (data.city) {
+    handleSearch(data.city);
+  } else {
+    return;
+  }
+}
+
+async function getCityFromCoordinates(lat, long) {
+  try {
+    const response = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${long}&localityLanguage=en`,
+    );
+    if (!response.ok) {
+      throw new Error("There was an error in fetching data.");
+    }
+    const data = response.json();
+    console.log("here");
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ========================== HANDLES SEARCH BUTTON AND DISPLAY LOGIC =============================
 
 // Get coordinates for a city name
 async function getCoordinates(city) {
@@ -119,7 +226,11 @@ const displayLoadingSkeleton = (cityName) => {
     `;
   weatherContainer.style.display = "block";
   statsContainer.style.display = "grid";
-  forecastTag.style.display = "block";
+  forecastHeader.style.display = "none";
+  currentLocation.style.display = "none";
+  orDivider.style.display = "none";
+  recentSearchHeader.style.display = "none";
+  recentSearchContainer.style.display = "none";
   weatherContainer.innerHTML = displaySkeleton;
   statsContainer.innerHTML = statsSkeleton;
   forecastContainer.innerHTML = forecastSkeleton;
@@ -136,12 +247,69 @@ const displayCurrentWeather = (data, cityName, country) => {
   const currentUVIndex = data.daily.uv_index_max[0];
   const uvDescription = getUVIndex(Math.round(currentUVIndex));
 
+  // Add icon animation class based on icon
+  const iconClass =
+    weatherDescriptionAndCode.icon === "☀️"
+      ? "sun"
+      : weatherDescriptionAndCode.icon === "⛅️"
+        ? "cloudy"
+        : "";
+  // If it's raining in icon, add the raining animation
+  const isRainingOrSnowing =
+    weatherDescriptionAndCode.icon === "🌧️"
+      ? `
+    <div class="rainy">
+        <div class="rain-cloud">☁️</div>
+            <div class="rain-drops">
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+            </div>
+    </div>
+    `
+      : weatherDescriptionAndCode.icon === "🌦️"
+        ? `
+        <div class="rainy">
+            <div class="rain-cloud">⛅️</div>
+            <div class="rain-drops">
+                <div class="rain-drop">💧</div>
+                <div class="rain-drop">💧</div>
+                <div class="rain-drop">💧</div>
+            </div>
+        </div>
+      `
+        : weatherDescriptionAndCode.icon === "⛈️"
+          ? `
+        <div class="rainy">
+            <div class="rain-cloud">🌩️</div>
+            <div class="rain-drops">
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+              <div class="rain-drop">💧</div>
+            </div>
+        </div>
+        `
+          : weatherDescriptionAndCode.icon === "❄️"
+            ? `
+            <div class="rainy">
+                <div class="rain-cloud">☁️</div>
+                <div class="rain-drops">
+                    <div class="rain-drop snow">❄️</div>
+                    <div class="rain-drop snow">❄️</div>
+                    <div class="rain-drop snow">❄️</div>
+                </div>
+            </div>
+          `
+            : weatherDescriptionAndCode.icon;
+
   // update DOM
   let displayDetails = `
         <div class="display-details">
-            <div class="weather-icon" id="weather-icon">${weatherDescriptionAndCode.icon}</div>
+            <div class="weather-icon ${iconClass}" id="weather-icon">
+            ${isRainingOrSnowing}
+            </div>
             <p class="location">${cityName}, ${country}</p>
-            <h1 class="weather-temperature">${Math.round(currentTemperature)}°C</h1>
+            <p class="weather-temperature">${Math.round(currentTemperature)}°C</p>
             <p class="weather-description">
                 <span id="description">${weatherDescriptionAndCode.desc}</span> · Feels like
                 <span id="feels-like">${Math.round(currentApparentTemperature)}°C</span>
@@ -222,7 +390,7 @@ const displayForecast = (daily) => {
     displayForecast += `
         <div class="forecast-item">
             <p class="forecast-date">${getForecastDays[i]}</p>
-            <div class="forecast-icon">${getForecastWeatherIcons[i].icon}</div>
+            <div class="forecast-icon">${getForecastWeatherIcons[i].icon ? getForecastWeatherIcons[i].icon : "-"}</div>
             <div class="forecast-temperature">
                 <p class="highest">${Math.round(forecastHighestTemp[i])}°</p>
                 <p class="lowest">${Math.round(forecastLowestTemp[i])}°</p>
@@ -230,10 +398,11 @@ const displayForecast = (daily) => {
         </div>
     `;
   }
-  forecastTag.style.display = "block";
+  forecastHeader.style.display = "flex";
   forecastContainer.innerHTML = displayForecast;
+  toggleTemperature.textContent = "Show in °F";
 };
-// Converts dates to day
+// Converts dates of next 5 days to day
 const convertDateToDay = (dates) => {
   const newDates = dates.map((date) => {
     const convertDate = new Date(date);
@@ -249,8 +418,10 @@ const convertDateToDay = (dates) => {
     ];
     return days[day];
   });
+  newDates[0] = "Today";
   return newDates;
 };
+// Returns the weather icon for the next 5 days
 const convertWeatherCode = (codes) => {
   const weatherCodes = codes.map((code) => {
     return getWeatherDescription(code);
@@ -258,25 +429,98 @@ const convertWeatherCode = (codes) => {
   return weatherCodes;
 };
 
+// Handle toggle for fahrenheit or celsius
+const handleToggle = (data) => {
+  const weatherTemperature = document.querySelector(".weather-temperature");
+  const feelsLike = document.querySelector("#feels-like");
+  const highestTemp = document.querySelectorAll(".highest");
+  const lowestTemp = document.querySelectorAll(".lowest");
+  const currentTemperature = data.current.temperature_2m;
+  const currentApparentTemperature = data.current.apparent_temperature;
+  const forecastHighestTemp = data.daily.temperature_2m_max.slice(0, 5);
+  const forecastLowestTemp = data.daily.temperature_2m_min.slice(0, 5);
+  const forecastHighestTempInFahrenheit = forecastHighestTemp.map((temp) => {
+    return convertToFahrenheit(temp);
+  });
+  const forecastLowestTempInFahrenheit = forecastLowestTemp.map((temp) => {
+    return convertToFahrenheit(temp);
+  });
+
+  if (currentUnit === "fahrenheit") {
+    toggleTemperature.textContent = "Show in °F";
+    weatherTemperature.textContent = `${Math.round(currentTemperature)}°C`;
+    feelsLike.textContent = `${Math.round(currentApparentTemperature)}°C`;
+    for (let i = 0; i < 5; i++) {
+      highestTemp[i].textContent = `${Math.round(forecastHighestTemp[i])}°`;
+      lowestTemp[i].textContent = `${Math.round(forecastLowestTemp[i])}°`;
+    }
+    currentUnit = "celsius";
+    return;
+  } else if (currentUnit === "celsius") {
+    const currentTemperatureInFahrenheit =
+      convertToFahrenheit(currentTemperature);
+    const currentApparentTemperatureInFahrenheit = convertToFahrenheit(
+      currentApparentTemperature,
+    );
+    toggleTemperature.textContent = "Show in °C";
+    weatherTemperature.textContent = `${Math.round(currentTemperatureInFahrenheit)}°F`;
+    feelsLike.textContent = `${Math.round(currentApparentTemperatureInFahrenheit)}°F`;
+    for (let i = 0; i < 5; i++) {
+      highestTemp[i].textContent =
+        `${Math.round(forecastHighestTempInFahrenheit[i])}°`;
+      lowestTemp[i].textContent =
+        `${Math.round(forecastLowestTempInFahrenheit[i])}°`;
+    }
+    currentUnit = "fahrenheit";
+    return;
+  }
+};
+const convertToFahrenheit = (celsius) => {
+  const result = celsius * 1.8 + 32;
+  return result;
+};
+
 // Main function triggered by the Search button
 async function handleSearch(city) {
-  const coordinateResponse = await getCoordinates(city);
-  if (coordinateResponse.results) {
-    const cityName = coordinateResponse.results[0].name;
-    const countryName = coordinateResponse.results[0].country;
-    const latitude = coordinateResponse.results[0].latitude;
-    const longitude = coordinateResponse.results[0].longitude;
-    displayLoadingSkeleton(cityName);
-    const weatherResponse = await getWeather(latitude, longitude);
-    if (weatherResponse) {
-      displayCurrentWeather(weatherResponse, cityName, countryName);
-      displayForecast(weatherResponse.daily);
-      cityInput.value = "";
+  try {
+    currentUnit = "";
+    const coordinateResponse = await getCoordinates(city);
+    if (coordinateResponse.results) {
+      const cityName = coordinateResponse.results[0].name;
+      const countryName = coordinateResponse.results[0].country;
+      const latitude = coordinateResponse.results[0].latitude;
+      const longitude = coordinateResponse.results[0].longitude;
+      displayLoadingSkeleton(cityName);
+      const weatherResponse = await getWeather(latitude, longitude);
+      if (weatherResponse) {
+        displayCurrentWeather(weatherResponse, cityName, countryName);
+        displayForecast(weatherResponse.daily);
+        cityInput.value = "";
+        currentUnit = "celsius";
+        currentWeatherResponse = weatherResponse;
+        recentlySearchedArr.unshift({
+          city: cityName,
+          country: countryName,
+        });
+        localStorage.setItem(
+          "recently_searched",
+          JSON.stringify(recentlySearchedArr),
+        );
+      }
+    } else {
+      errorMessage.style.display = "block";
     }
-  } else {
-    errorMessage.style.display = "block";
+  } catch (error) {
+    console.log("There was an error: " + error);
   }
 }
+
+// Add event listener to toggle button
+toggleTemperature.addEventListener("click", () => {
+  if (currentWeatherResponse) {
+    handleToggle(currentWeatherResponse);
+  }
+});
 
 // Removes the error message (if any) when a user starts to type
 cityInput.addEventListener("input", () => {
@@ -292,15 +536,3 @@ searchForm.addEventListener("submit", (e) => {
   }
   handleSearch(city.toLowerCase());
 });
-
-// on the first load of the screen
-// if (navigator.geolocation) {
-//   navigator.geolocation.getCurrentPosition(showPosition);
-// }
-
-// async function showPosition(position) {
-//   const onLoadWeather = await getWeather(
-//     position.coords.latitude,
-//     position.coords.longitude,
-//   );
-// }
