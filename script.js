@@ -119,7 +119,6 @@ async function getCityFromCoordinates(lat, long) {
       throw new Error("There was an error in fetching data.");
     }
     const data = response.json();
-    console.log("here");
     return data;
   } catch (error) {
     console.log(error);
@@ -351,7 +350,7 @@ const getWeatherDescription = (code) => {
     return { desc: "Snow", icon: "❄️" };
   } else if (code === 80 || code === 81 || code === 82) {
     return { desc: "Rain showers", icon: "🌦️" };
-  } else if (code === 95) {
+  } else if (code === 95 || code === 96 || code === 99) {
     return { desc: "Thunderstorm", icon: "⛈️" };
   } else {
     return "";
@@ -493,6 +492,7 @@ async function handleSearch(city) {
       displayLoadingSkeleton(cityName);
       const weatherResponse = await getWeather(latitude, longitude);
       if (weatherResponse) {
+        console.log(weatherResponse);
         displayCurrentWeather(weatherResponse, cityName, countryName);
         displayForecast(weatherResponse.daily);
         cityInput.value = "";
