@@ -54,7 +54,7 @@ if (recentlySearchedArr.length > 0) {
   let recentHTML = "";
   finalArr.slice(0, 5).forEach((search) => {
     recentHTML += `
-            <div class="recent-search-item" id="${search[0].city}">
+            <div class="recent-search-item">
                 <div class="recent-search-location">
                   <i class="fa-solid fa-location-dot"></i>
                   <div class="location">
@@ -62,14 +62,18 @@ if (recentlySearchedArr.length > 0) {
                     <p id="recent-country">${search[0].country}</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-angle-right"></i>
+                <i class="fa-solid fa-angle-right" id="${search[0].city}"></i>
             </div>
     `;
   });
   recentSearchContainer.innerHTML = recentHTML;
   recentSearchContainer.addEventListener("click", (e) => {
-    const cityName = e.target.attributes.id.value;
-    handleSearch(cityName);
+    if (e.target.classList.contains("fa-solid")) {
+      const cityName = e.target.attributes.id.value;
+      handleSearch(cityName);
+    } else {
+      return;
+    }
   });
   currentLocation.addEventListener("click", () => {
     if (navigator.geolocation) {
@@ -492,7 +496,6 @@ async function handleSearch(city) {
       displayLoadingSkeleton(cityName);
       const weatherResponse = await getWeather(latitude, longitude);
       if (weatherResponse) {
-        console.log(weatherResponse);
         displayCurrentWeather(weatherResponse, cityName, countryName);
         displayForecast(weatherResponse.daily);
         cityInput.value = "";
@@ -509,6 +512,7 @@ async function handleSearch(city) {
       }
     } else {
       errorMessage.style.display = "block";
+      console.log("something went wrong with ", city);
     }
   } catch (error) {
     console.log("There was an error: " + error);

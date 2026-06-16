@@ -591,7 +591,3 @@ input:focus {
   animation-delay: 0.5s;
   font-size: 0.6rem;
 }
-
-.snow {
-  animation: spinning 0.5s linear infinite;
-}
