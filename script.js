@@ -54,7 +54,7 @@ if (recentlySearchedArr.length > 0) {
   let recentHTML = "";
   finalArr.slice(0, 5).forEach((search) => {
     recentHTML += `
-            <div class="recent-search-item">
+            <div class="recent-search-item" id="${search[0].city}">
                 <div class="recent-search-location">
                   <i class="fa-solid fa-location-dot"></i>
                   <div class="location">
@@ -62,13 +62,12 @@ if (recentlySearchedArr.length > 0) {
                     <p id="recent-country">${search[0].country}</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-angle-right" id="${search[0].city}"></i>
             </div>
     `;
   });
   recentSearchContainer.innerHTML = recentHTML;
   recentSearchContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("fa-solid")) {
+    if (e.target.classList.contains("recent-search-item")) {
       const cityName = e.target.attributes.id.value;
       handleSearch(cityName);
     } else {
@@ -83,25 +82,21 @@ if (recentlySearchedArr.length > 0) {
     }
   });
 } else {
-  // Task: Update this to geolocation function. If user declines geolocation request, show this.
+  // if user does not give permissions to use location, then display nothing on screen.
+  weatherContainer.style.display = "none";
+  statsContainer.style.display = "none";
+  forecastHeader.style.display = "none";
+  currentLocation.style.display = "none";
+  orDivider.style.display = "none";
+  recentSearchHeader.style.display = "none";
   if (navigator.geolocation) {
-    weatherContainer.style.display = "none";
-    statsContainer.style.display = "none";
-    forecastHeader.style.display = "none";
-    currentLocation.style.display = "none";
-    orDivider.style.display = "none";
-    recentSearchHeader.style.display = "none";
     navigator.geolocation.getCurrentPosition(usePosition);
-  } else {
-    weatherContainer.style.display = "none";
-    statsContainer.style.display = "none";
-    forecastHeader.style.display = "none";
-    currentLocation.style.display = "none";
-    orDivider.style.display = "none";
-    recentSearchHeader.style.display = "none";
   }
 }
 
+// callback function required by the geolocation to get the coordinates of the user
+// reverse fetches the city from the coordinates and then displays the user's current
+// location weather information
 async function usePosition(position) {
   const data = await getCityFromCoordinates(
     position.coords.latitude,
@@ -114,6 +109,8 @@ async function usePosition(position) {
   }
 }
 
+// uses the bigdatacloud api to perform the reverse search to get the name of the city passed by
+// the user's current location coordinates.
 async function getCityFromCoordinates(lat, long) {
   try {
     const response = await fetch(
