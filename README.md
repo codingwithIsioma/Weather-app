@@ -1,7 +1,5 @@
 # Weather App
 
----
-
 **Name:** Ezekiel Blessing Isioma
 
 **Student ID:** ALT/SOE/BAR/026/0246
